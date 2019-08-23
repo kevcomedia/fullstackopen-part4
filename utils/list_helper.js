@@ -16,46 +16,40 @@ const favoriteBlog = (blogs) => {
   }, null)
 }
 
-const mostBlogs = (blogs) => {
-  const counts = new Map()
-  blogs.forEach(({ author }) => {
-    if (!counts.has(author)) {
-      counts.set(author, 1)
+const mostBlogs = (blogList) => {
+  const blogCountMap = new Map()
+  blogList.forEach(({ author }) => {
+    if (!blogCountMap.has(author)) {
+      blogCountMap.set(author, 1)
     } else {
-      counts.set(author, counts.get(author) + 1)
+      blogCountMap.set(author, blogCountMap.get(author) + 1)
     }
   })
 
   let bestEntry = null
-  for (const entry of counts.entries()) {
-    if (bestEntry === null || entry[1] > bestEntry.blogs) {
-      bestEntry = {
-        author: entry[0],
-        blogs: entry[1],
-      }
+  for (const [author, blogs] of blogCountMap.entries()) {
+    if (bestEntry === null || blogs > bestEntry.blogs) {
+      bestEntry = { author, blogs }
     }
   }
 
   return bestEntry
 }
 
-const mostLikes = (blogs) => {
-  const authorLikes = new Map()
-  blogs.forEach(({ author, likes }) => {
-    if (!authorLikes.has(author)) {
-      authorLikes.set(author, likes)
+const mostLikes = (blogList) => {
+  const authorLikesMap = new Map()
+  blogList.forEach(({ author, likes }) => {
+    if (!authorLikesMap.has(author)) {
+      authorLikesMap.set(author, likes)
     } else {
-      authorLikes.set(author, authorLikes.get(author) + likes)
+      authorLikesMap.set(author, authorLikesMap.get(author) + likes)
     }
   })
 
   let bestEntry = null
-  for (const entry of authorLikes.entries()) {
-    if (bestEntry === null || entry[1] > bestEntry.likes) {
-      bestEntry = {
-        author: entry[0],
-        likes: entry[1],
-      }
+  for (const [author, likes] of authorLikesMap.entries()) {
+    if (bestEntry === null || likes > bestEntry.likes) {
+      bestEntry = { author, likes }
     }
   }
 
