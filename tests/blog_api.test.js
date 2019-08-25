@@ -21,6 +21,13 @@ test('retrieves the right number of blogs', async () => {
     .expect('Content-Type', /application\/json/)
 })
 
+test('blogs are identified by id', async () => {
+  const result = await api.get('/api/blogs').expect(200)
+  result.body.forEach(blog => {
+    expect(blog.id).toBeDefined()
+  })
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
