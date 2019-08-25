@@ -85,6 +85,17 @@ test('blog url is required', async () => {
     .expect(400)
 })
 
+test('a blog can be deleted', async () => {
+  const blogToDelete = testHelper.listWithManyBlogs[0]
+  const id = blogToDelete._id
+
+  await api.delete(`/api/blogs/${id}`)
+    .expect(204)
+
+  const blogsAfterDeletion = await api.get('/api/blogs')
+  expect(blogsAfterDeletion.body.length).toBe(testHelper.listWithManyBlogs.length - 1)
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
