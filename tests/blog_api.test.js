@@ -28,6 +28,25 @@ test('blogs are identified by id', async () => {
   })
 })
 
+test('can create blog', async () => {
+  const newBlog = {
+    title: 'New blog',
+    author: 'John Doe',
+    url: 'http://example.com',
+    likes: 42,
+  }
+
+  await api.post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const blogsAfterPost = await api.get('/api/blogs')
+  expect(blogsAfterPost.body.length).toBe(testHelper.listWithManyBlogs.length + 1)
+  const titles = blogsAfterPost.body.map(blog => blog.title)
+  expect(titles).toContain('New blog')
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
