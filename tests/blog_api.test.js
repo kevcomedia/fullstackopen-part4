@@ -85,6 +85,46 @@ test('blog url is required', async () => {
     .expect(400)
 })
 
+test('a blog\'s likes can be updated', async () => {
+  const blogToUpdate = testHelper.listWithManyBlogs[0]
+  const newBlog = {
+    ...blogToUpdate,
+    likes: blogToUpdate.likes + 1,
+  }
+
+  const result = await api.put(`/api/blogs/${newBlog._id}`)
+    .send(newBlog)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+  const updatedBlog = result.body
+  expect(updatedBlog.likes).toBe(newBlog.likes)
+})
+
+test('updating a blog with invalid id', async () => {
+  const blogToUpdate = testHelper.listWithManyBlogs[0]
+  const newBlog = {
+    ...blogToUpdate,
+    likes: blogToUpdate.likes + 1,
+  }
+
+  await api.put('/api/blogs/5f12345678')
+    .send(newBlog)
+    .expect(400)
+})
+
+test('updating a nonexisting blog', async () => {
+  await Blog.deleteMany({})
+
+  const blogToUpdate = testHelper.listWithManyBlogs[0]
+  const newBlog = {
+    ...blogToUpdate,
+    likes: blogToUpdate.likes + 1,
+  }
+  await api.put(`/api/blogs/${blogToUpdate._id}`)
+    .send(newBlog)
+    .expect(404)
+})
+
 test('a blog can be deleted', async () => {
   const blogToDelete = testHelper.listWithManyBlogs[0]
   const id = blogToDelete._id
