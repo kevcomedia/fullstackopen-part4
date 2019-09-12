@@ -2,12 +2,14 @@ const supertest = require('supertest')
 const mongoose = require('mongoose')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const testHelper = require('./test_helper.js')
 
 const api = supertest(app)
 
 beforeEach(async () => {
   await Blog.deleteMany({})
+  await User.deleteMany({})
 
   const blogPromises = testHelper.listWithManyBlogs
     .map((blog) => new Blog(blog))
@@ -29,11 +31,18 @@ test('blogs are identified by id', async () => {
 })
 
 test('can create blog', async () => {
+  const user = new User({
+    username: 'kev',
+    name: 'Kev',
+    passwordHash: 'sample-password-hash',
+  })
+  const savedUser = await user.save()
   const newBlog = {
     title: 'New blog',
     author: 'John Doe',
     url: 'http://example.com',
     likes: 42,
+    userId: savedUser._id,
   }
 
   await api.post('/api/blogs')
@@ -48,10 +57,17 @@ test('can create blog', async () => {
 })
 
 test('missing likes property defaults to 0', async () => {
+  const user = new User({
+    username: 'kev',
+    name: 'Kev',
+    passwordHash: 'sample-password-hash',
+  })
+  const savedUser = await user.save()
   const newBlog = {
     title: 'New blog',
     author: 'John Doe',
     url: 'http://example.com',
+    userId: savedUser._id,
   }
 
   const result = await api.post('/api/blogs')
@@ -64,9 +80,16 @@ test('missing likes property defaults to 0', async () => {
 })
 
 test('blog title is required', async () => {
+  const user = new User({
+    username: 'kev',
+    name: 'Kev',
+    passwordHash: 'sample-password-hash',
+  })
+  const savedUser = await user.save()
   const blogWithNoTitle = {
     author: 'John Doe',
     url: 'http://example.com',
+    userId: savedUser._id,
   }
 
   await api.post('/api/blogs')
@@ -75,9 +98,16 @@ test('blog title is required', async () => {
 })
 
 test('blog url is required', async () => {
+  const user = new User({
+    username: 'kev',
+    name: 'Kev',
+    passwordHash: 'sample-password-hash',
+  })
+  const savedUser = await user.save()
   const blogWithNoUrl = {
     title: 'New blog',
     author: 'John Doe',
+    userId: savedUser._id,
   }
 
   await api.post('/api/blogs')
