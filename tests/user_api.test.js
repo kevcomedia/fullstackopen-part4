@@ -80,6 +80,38 @@ describe('user creation', () => {
     const usersAfter = await User.find({})
     expect(usersAfter.length).toBe(usersBefore.length)
   })
+
+  test('username is at least 3 characters long', async () => {
+    const usersBefore = await User.find({})
+
+    const newUser = {
+      username: 'hi',
+      name: 'Hi',
+      password: 'sample-password',
+    }
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+    const usersAfter = await User.find({})
+    expect(usersAfter.length).toBe(usersBefore.length)
+  })
+
+  test('password is at least 3 characters long', async () => {
+    const usersBefore = await User.find({})
+
+    const newUser = {
+      username: 'bob',
+      name: 'Bob',
+      password: 'hi',
+    }
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+    const usersAfter = await User.find({})
+    expect(usersAfter.length).toBe(usersBefore.length)
+  })
 })
 
 afterAll(() => {
